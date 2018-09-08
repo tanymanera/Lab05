@@ -9,17 +9,12 @@ import java.util.Set;
 import it.polito.tdp.anagrammi.db.NomeDAO;
 
 public class Model {
-	private String currentWord;
 	private Set<String> permutazioni;
 	private Set<String> parole;
 	private NomeDAO dao;
 	
 	public Model() {
 		dao = new NomeDAO();
-	}
-	
-	public void setCurrentWord(String currentWord) {
-		this.currentWord = currentWord;
 	}
 	
 	/**
@@ -33,13 +28,7 @@ public class Model {
 	 */
 	public void ricorsione(String untilNow, List<Character> caratteriDisponibili) {
 		if(caratteriDisponibili.isEmpty()) {
-			
-			if(!parole.contains(untilNow) && dao.isNome(untilNow)) {
-				parole.add(untilNow);
-			}
-			if(!parole.contains(untilNow)) {
 				permutazioni.add(untilNow);
-			}
 			return;
 		}
 		StringBuilder justNow = new StringBuilder();
@@ -63,17 +52,23 @@ public class Model {
 	public Set<String> getParole() {
 		return parole;
 	}
+	
+	private void setParole() {
+		dao = new NomeDAO();
+		parole = dao.isNome(permutazioni);
+	}
 
 	public void anagrammma(String currentWord) {
 		permutazioni = new HashSet<>();
 		parole = new HashSet<>();
-		setCurrentWord(currentWord);
 		String untilNow = "";
 		List<Character> disponibili = new LinkedList<Character>();
 		for(char chr: currentWord.toCharArray()) {
 			disponibili.add(chr);
 		}
 		ricorsione(untilNow, disponibili);
+		setParole();
+		permutazioni.removeAll(parole);
 	}
 	
 }
